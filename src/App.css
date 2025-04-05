@@ -1,0 +1,157 @@
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  line-height: 1.6;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  overflow: hidden;
+  padding: 0 2rem;
+}
+
+/* Navbar */
+.navbar {
+  background: #333;
+  color: #fff;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+}
+
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+  align-items: center; /* Align items vertically */
+}
+
+.navbar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-right: auto; /* Push other links to the right */
+}
+
+.navbar li {
+  margin-left: 1rem;
+}
+
+/* HomePage */
+.home-page {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.home-page h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.home-page p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.upload-button {
+  background: #5cb85c;
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+  background: #4cae4c;
+}
+
+/* ChatPage */
+.chat-page {
+  display: flex;
+  height: calc(100vh - 100px); /* Adjust based on navbar height */
+  padding: 1rem;
+}
+
+.chat-container {
+  flex: 2;
+  border: 1px solid #ccc;
+  margin-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.chat-input {
+  display: flex;
+  padding: 0.5rem;
+}
+
+.chat-input input {
+  flex-grow: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.chat-input button {
+  margin-left: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #337ab7;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.suggestions-container {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  background-color: #fff;
+}
+
+.suggestions-container h3 {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Simple message styling */
+.message {
+  margin-bottom: 0.8rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 5px;
+  max-width: 80%;
+}
+
+.message.user {
+  background-color: #dcf8c6;
+  align-self: flex-end;
+  margin-left: auto; /* Push user messages to the right */
+}
+
+.message.ai {
+  background-color: #eee;
+  align-self: flex-start;
+  margin-right: auto; /* Push AI messages to the left */
+} 
