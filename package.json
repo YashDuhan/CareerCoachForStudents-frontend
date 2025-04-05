@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "echo \"Please configure your build process\"",
+    "build": "next build",
     "start": "echo \"Please configure your development server (e.g., using Vite or Create React App)\"",
     "lint": "next lint",
     "test": "echo \"Please configure your test runner\""
