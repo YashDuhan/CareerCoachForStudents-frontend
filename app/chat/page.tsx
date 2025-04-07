@@ -20,77 +20,10 @@ interface ResumeData {
   timestamp: string;
 }
 
-// Replace the formatJsonResponse function with a direct JSON parser
-const formatJsonResponse = (jsonResponse: any): string => {
-  try {
-    // Check for CareerAdvice structure
-    if (jsonResponse.CareerAdvice && Array.isArray(jsonResponse.CareerAdvice)) {
-      let result = "CareerAdvice:\n\n";
-      
-      jsonResponse.CareerAdvice.forEach((advice: any, index: number) => {
-        result += `JobRole: "${advice.JobRole}"\n`;
-        result += `Reason: "${advice.Reason}"\n\n`;
-      });
-      
-      return result;
-    }
-    
-    // For suggestions array, apply minimal formatting with colored keys
-    if (jsonResponse.suggestions && Array.isArray(jsonResponse.suggestions)) {
-      let result = "ResumeImprovementSuggestions:\n\n";
-      
-      jsonResponse.suggestions.forEach((suggestion: any, index: number) => {
-        result += `Item ${index + 1}:\n`;
-        result += `Action: ${suggestion.action}\n`;
-        result += `Suggestion: ${suggestion.description}\n\n`;
-      });
-      
-      return result;
-    }
-    
-    // For other JSON responses
-    if (typeof jsonResponse === 'object' && jsonResponse !== null) {
-      // Convert the object to a pretty-printed string with indentation
-      const formattedJson = JSON.stringify(jsonResponse, null, 2);
-      
-      // Simple string replacement to highlight structure
-      return formattedJson
-        .replace(/"([^"]+)":/g, '$1:') // Remove quotes around keys
-        .replace(/\n/g, '\n') // Keep newlines
-        .replace(/  /g, '  '); // Keep indentation
-    }
-    
-    // Fallback
-    return String(jsonResponse);
-  } catch (error) {
-    console.error("Error formatting JSON:", error);
-    return String(jsonResponse);
-  }
-};
-
-// Update the formatMessageContent function to apply minimal styling
+// Updated formatMessageContent function (only handles newlines)
 const formatMessageContent = (content: string): string => {
-  // First, check if the content is a CareerAdvice JSON structure
-  if (content.includes('CareerAdvice') && content.includes('JobRole') && content.includes('Reason')) {
-    // Remove or hide the curly braces
-    content = content.replace(/^\{/g, '') // Remove opening curly brace at start
-             .replace(/\}$/g, '') // Remove closing curly brace at end
-             .replace(/\[\s*\{/g, '[') // Replace opening array curly brace
-             .replace(/\}\s*\]/g, ']') // Replace closing array curly brace
-             .replace(/\}\s*,\s*\{/g, ','); // Replace intermediate curly braces
-  }
-
-  // Apply color to JSON keys (now without quotes)
-  let formattedContent = content
-    .replace(/^(\w+):/gm, '<span class="text-yellow-400">$1</span>:') // Color the keys
-    .replace(/Item (\d+):/g, '<span class="text-yellow-400">Item $1</span>:') // Color item numbers
-    .replace(/Action:/g, '<span class="text-purple-400">Action</span>:') // Color Action
-    .replace(/Suggestion:/g, '<span class="text-purple-400">Suggestion</span>:'); // Color Suggestion
-  
   // Replace newlines with <br>
-  formattedContent = formattedContent.replace(/\n/g, '<br>');
-  
-  return formattedContent;
+  return content.replace(/\n/g, '<br>');
 };
 
 export default function ChatPage() {
@@ -144,6 +77,7 @@ export default function ChatPage() {
     scrollToBottom()
   }, [messages])
 
+  // Simplified handleSendMessage for { answer: "..." } response format
   const handleSendMessage = async (content = inputValue) => {
     if ((!content.trim() && !inputValue.trim()) || isProcessing || !resumeData) return
     
@@ -178,63 +112,18 @@ export default function ChatPage() {
         previousConvo
       )
       
-      // Process the response - check if it's a JSON object
-      let assistantContent = "";
-      
-      if (response) {
-        try {
-          // Check if response.answer is JSON string
-          if (response.answer && typeof response.answer === 'string') {
-            // Try to parse JSON
-            try {
-              if (response.answer.trim().startsWith('{')) {
-                const jsonData = JSON.parse(response.answer);
-                assistantContent = formatJsonResponse(jsonData);
-              } else {
-                assistantContent = response.answer;
-              }
-            } catch (e) {
-              // If parsing fails, show raw response
-              assistantContent = response.answer;
-            }
-          } 
-          // Check if response.response exists
-          else if (response.response) {
-            // Try to parse if string
-            if (typeof response.response === 'string') {
-              if (response.response.trim().startsWith('{') || response.response.trim().startsWith('[')) {
-                try {
-                  const jsonData = JSON.parse(response.response);
-                  assistantContent = formatJsonResponse(jsonData);
-                } catch (e) {
-                  assistantContent = response.response;
-                }
-              } else {
-                assistantContent = response.response;
-              }
-            } 
-            // If already an object
-            else if (typeof response.response === 'object') {
-              assistantContent = formatJsonResponse(response.response);
-            }
-          } 
-          // If the response itself is the data
-          else if (typeof response === 'object') {
-            assistantContent = formatJsonResponse(response);
-          }
-        } catch (error) {
-          console.error("Error processing response:", error);
-          assistantContent = String(response.answer || response.response || response);
-        }
-      }
-      
-      if (!assistantContent) {
-        assistantContent = "I'm sorry, I couldn't process that request. Please try again.";
+      // Directly use response.answer as content, with fallback
+      let assistantContent = "I'm sorry, I couldn't process that request. Please try again.";
+      if (response && response.answer && typeof response.answer === 'string') {
+        assistantContent = response.answer;
+      } else {
+         console.error("Invalid response format received:", response);
+         // Keep the default error message
       }
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: assistantContent,
+        content: assistantContent, // Raw content; newlines handled by formatMessageContent in render
         role: "assistant",
         timestamp: new Date()
       }
